@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# IDE
+.idea/
+
+# Project output
+output/
+LocalSTT_light.zip
+
+# Local models
+models/
