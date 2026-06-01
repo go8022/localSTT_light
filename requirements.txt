@@ -1,0 +1,7 @@
+numpy>=1.21.0
+sounddevice>=0.4.5
+soundfile>=0.11.0
+faster-whisper>=0.10.0
+torch>=2.0.0
+torchaudio>=2.0.0
+soundcard>=0.4.6

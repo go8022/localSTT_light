@@ -1,0 +1,16 @@
+{
+  "window_alpha": 1.0,
+  "text_font_size": 10,
+  "text_fg": "black",
+  "stt_language": "English",
+  "primary_source_name": "1: [MME] 스테레오 믹스(Realtek(R) Audio) (2ch, 44100Hz)",
+  "secondary_source_name": "0: [MME] Microsoft 사운드 매퍼 - Input (2ch, 44100Hz)",
+  "selected_model_name": "faster-whisper-tiny.en",
+  "streaming_transcription": true,
+  "primary_source_enabled": true,
+  "secondary_source_enabled": false,
+  "always_on_top": true,
+  "compact_auto_opacity": true,
+  "compact_alpha": 0.75,
+  "silent_source_warning": true
+}

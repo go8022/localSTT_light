@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# virtualenv
+venv/
+env/
+.venv/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# output
+output/
+LocalSTT_light.zip
+
+# models
+models/
