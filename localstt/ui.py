@@ -7,7 +7,7 @@ from tkinter import colorchooser, messagebox, scrolledtext, ttk
 
 import numpy as np
 
-from .config import APP_DIR, list_available_model_names
+from .config import APP_DIR, STT_LANGUAGE_CHOICES, list_available_model_names
 
 
 RECOMMENDED_SOURCE_COLOR = "#0b7d2b"
@@ -28,7 +28,7 @@ class UIMixin:
         self.silent_source_warning_var = tk.BooleanVar(value=self.silent_source_warning)
         self.font_size_var = tk.IntVar(value=self.text_font_size)
         self.font_color_var = tk.StringVar(value=self.text_fg)
-        self.stt_language_var = tk.StringVar(value="English")
+        self.stt_language_var = tk.StringVar(value=self.stt_language)
         self.model_var = tk.StringVar(value=self.selected_model_name)
         self.primary_source_var = tk.BooleanVar(value=self.primary_source_enabled)
         self.secondary_source_var = tk.BooleanVar(value=self.secondary_source_enabled)
@@ -77,7 +77,15 @@ class UIMixin:
         ).grid(row=0, column=5, columnspan=2, sticky="w", padx=5, pady=4)
 
         tk.Label(appearance_frame, text="STT Language").grid(row=1, column=5, sticky="w", padx=5, pady=4)
-        tk.Label(appearance_frame, text="English", font=("Arial", 9, "bold")).grid(row=1, column=6, sticky="w", padx=5, pady=4)
+        self.language_combo = ttk.Combobox(
+            appearance_frame,
+            textvariable=self.stt_language_var,
+            values=STT_LANGUAGE_CHOICES,
+            state="readonly",
+            width=10,
+        )
+        self.language_combo.grid(row=1, column=6, sticky="w", padx=5, pady=4)
+        self.language_combo.bind("<<ComboboxSelected>>", self.on_language_selection_changed)
 
         tk.Label(appearance_frame, text="Model").grid(row=1, column=0, sticky="w", padx=5, pady=4)
         self.model_combo = ttk.Combobox(
@@ -518,6 +526,23 @@ class UIMixin:
             self.save_user_settings()
             self.check_model_files()
             self.log(f"Model changed to: {selected}\n")
+            self.warn_if_language_model_mismatch()
+
+    def on_language_selection_changed(self, event=None):
+        selected = self.stt_language_var.get()
+        if selected != self.stt_language:
+            self.stt_language = selected
+            self.save_user_settings()
+            self.log(f"STT language changed to: {selected}\n")
+            self.warn_if_language_model_mismatch()
+
+    def warn_if_language_model_mismatch(self):
+        if self.stt_language == "Korean" and self.selected_model_name.endswith(".en"):
+            self.log(
+                "Korean/English STT needs a multilingual model such as "
+                "faster-whisper-tiny or faster-whisper-small. "
+                "The selected .en model is English-only.\n"
+            )
 
     def update_recording_time(self):
         """Update elapsed recording time."""
@@ -599,7 +624,7 @@ class UIMixin:
         return """LocalSTT Light - Quick Help
 
 Purpose
-LocalSTT Light records English audio and creates an SRT transcript file.
+LocalSTT Light records English or Korean/English mixed audio and creates an SRT transcript file.
 It does not include Korean translation.
 
 Basic Workflow
@@ -629,7 +654,9 @@ The output is saved as an SRT file only.
 Models
 Open Preferences to select a model from the models folder.
 The default model is faster-whisper-tiny.en.
-If you add another model folder, restart or reopen the app so it can be detected.
+For Korean/English STT, select a multilingual model folder such as faster-whisper-tiny
+or faster-whisper-small. If you add another model folder, restart or reopen the
+app so it can be detected.
 
 Recording Limit
 Recording is limited to 1 hour by default.
@@ -694,7 +721,7 @@ If the level meter stays at 0%, check Windows input permissions and selected dev
         self.silent_source_warning = self.silent_source_warning_var.get()
         self.text_font_size = self.font_size_var.get()
         self.text_fg = self.font_color_var.get()
-        self.stt_language = "English"
+        self.stt_language = self.stt_language_var.get()
 
         try:
             alpha = self.compact_alpha if self.compact_mode and self.compact_auto_opacity else self.window_alpha

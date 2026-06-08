@@ -13,23 +13,24 @@ from .config import (
     REALTIME_CHUNK_DURATION,
     REALTIME_PROMPT_CHARS,
     REALTIME_SAMPLE_RATE,
+    STT_LANGUAGE_CODES,
 )
 from .translation import SRT_MAX_PARAGRAPH_SECONDS, SRT_MIN_PARAGRAPH_SECONDS
 
 
 class TranscriptionMixin:
     def get_transcription_language(self):
-        value = getattr(self, "stt_language_var", None)
-        if value is None:
-            return None
+        value = getattr(self, "stt_language", "English")
+        if hasattr(self, "stt_language_var"):
+            value = self.stt_language_var.get()
 
-        return "en"
+        return STT_LANGUAGE_CODES.get(value, "en")
 
     def load_model(self):
         try:
             self.model_path = str(self.get_selected_model_path())
             self.set_status("Loading model...")
-            self.log(f"Loading English STT model: {self.selected_model_name}")
+            self.log(f"Loading {self.stt_language} STT model: {self.selected_model_name}")
             self.log(f"Model path: {self.model_path}")
 
             self.model = WhisperModel(

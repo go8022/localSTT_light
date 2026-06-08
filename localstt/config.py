@@ -23,9 +23,16 @@ APP_BASE_DIR = get_app_base_dir()
 BUNDLE_DIR = get_bundle_dir()
 MODEL_NAMES = [
     "faster-whisper-tiny.en",
+    "faster-whisper-tiny",
+    "faster-whisper-small",
 ]
 DEFAULT_MODEL_NAMES = MODEL_NAMES
 DEFAULT_MODEL_NAME = MODEL_NAMES[0]
+STT_LANGUAGE_CHOICES = ("English", "Korean")
+STT_LANGUAGE_CODES = {
+    "English": "en",
+    "Korean": None,
+}
 MODEL_REQUIRED_FILES = [
     "model.bin",
     "config.json",

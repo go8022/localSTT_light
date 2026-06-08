@@ -37,7 +37,13 @@ class DeviceMixin:
             self.log("model.bin 하나만 있으면 실행되지 않을 수 있습니다.\n")
         else:
             self.log("Model files look OK.\n")
-            self.log("Light version uses English STT only.\n")
+            if self.stt_language == "Korean" and self.selected_model_name.endswith(".en"):
+                self.log(
+                    "Selected model is English-only. "
+                    "Choose faster-whisper-tiny or faster-whisper-small for Korean STT.\n"
+                )
+            else:
+                self.log(f"Light version STT language: {self.stt_language}.\n")
 
     def get_selected_model_path(self):
         self.model_path = resolve_model_path([self.selected_model_name])

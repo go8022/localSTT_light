@@ -35,27 +35,36 @@ if (Test-Path "dist") {
 Get-Item "*.spec" -ErrorAction SilentlyContinue | Remove-Item -Force
 
 $currentDir = Get-Location
-$modelName = "faster-whisper-tiny.en"
+$modelNames = @(
+    "faster-whisper-tiny.en",
+    "faster-whisper-tiny",
+    "faster-whisper-small"
+)
 $modelDataArgs = @()
 $localModelsDir = Join-Path $currentDir "models"
 if (Test-Path $localModelsDir) {
     Write-Host "Bundling LocalSTT_light models folder into distribution: $localModelsDir" -ForegroundColor Cyan
     $modelDataArgs = @("--add-data", "$localModelsDir;models")
 } else {
-    foreach ($candidate in @(
-        (Join-Path (Resolve-Path "$currentDir\..") "models\$modelName"),
-        "C:\Tools\models\$modelName"
-    )) {
-        if (Test-Path $candidate) {
-            Write-Host "Bundling model folder into distribution: $candidate" -ForegroundColor Cyan
-            $modelDataArgs = @("--add-data", "$candidate;models\$modelName")
+    foreach ($modelName in $modelNames) {
+        foreach ($candidate in @(
+            (Join-Path (Resolve-Path "$currentDir\..") "models\$modelName"),
+            "C:\Tools\models\$modelName"
+        )) {
+            if (Test-Path $candidate) {
+                Write-Host "Bundling model folder into distribution: $candidate" -ForegroundColor Cyan
+                $modelDataArgs = @("--add-data", "$candidate;models\$modelName")
+                break
+            }
+        }
+        if ($modelDataArgs) {
             break
         }
     }
 }
 
 if (-not $modelDataArgs) {
-    Write-Host "ERROR: tiny.en model was not found. ZIP 배포에 필요한 모델을 먼저 준비하세요." -ForegroundColor Red
+    Write-Host "ERROR: No supported model was found. ZIP 배포에 필요한 모델을 먼저 준비하세요." -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }

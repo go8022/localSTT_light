@@ -2,7 +2,7 @@ import json
 import queue
 
 from .audio import AudioMixin
-from .config import DEFAULT_MODEL_NAME, SAMPLE_RATE, SETTINGS_PATH, resolve_model_path
+from .config import DEFAULT_MODEL_NAME, SAMPLE_RATE, SETTINGS_PATH, STT_LANGUAGE_CHOICES, resolve_model_path
 from .devices import DeviceMixin
 from .transcription import TranscriptionMixin
 from .translation import TranslationMixin
@@ -48,7 +48,8 @@ class LocalSTTApp(UIMixin, DeviceMixin, TranslationMixin, AudioMixin, Transcript
         self.text_font_family = "Consolas"
         self.text_font_size = self.settings.get("text_font_size", 10)
         self.text_fg = self.settings.get("text_fg", "black")
-        self.stt_language = "English"
+        saved_language = self.settings.get("stt_language", "English")
+        self.stt_language = saved_language if saved_language in STT_LANGUAGE_CHOICES else "English"
         self.primary_source_enabled = self.settings.get("primary_source_enabled", True)
         self.secondary_source_enabled = self.settings.get("secondary_source_enabled", True)
         self.recording_limit_seconds = 60 * 60
@@ -87,7 +88,7 @@ class LocalSTTApp(UIMixin, DeviceMixin, TranslationMixin, AudioMixin, Transcript
             "silent_source_warning": self.silent_source_warning,
             "text_font_size": self.text_font_size,
             "text_fg": self.text_fg,
-            "stt_language": "English",
+            "stt_language": self.stt_language,
             "selected_model_name": self.selected_model_name,
             "streaming_transcription": getattr(self, "streaming_var", None).get() if hasattr(self, "streaming_var") else True,
             "primary_source_enabled": getattr(self, "primary_source_var", None).get() if hasattr(self, "primary_source_var") else self.primary_source_enabled,
